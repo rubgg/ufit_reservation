@@ -2,6 +2,7 @@ import os
 import json
 import urllib.request
 import urllib.error
+import urllib.parse
 from http.server import BaseHTTPRequestHandler
 
 TARGET_URL = os.environ.get("TARGET_URL", "")
