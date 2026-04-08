@@ -52,7 +52,7 @@ class handler(BaseHTTPRequestHandler):
             with urllib.request.urlopen(req, timeout=15) as resp:
                 content = resp.read()
             reservas = json.loads(content)
-            self._respond(200, {"ok": True, "reservas": reservas})
+            self._respond(200, {"ok": True, "raw": content.decode("utf-8", errors="replace")})
         except urllib.error.HTTPError as e:
             self._respond(e.code, {"ok": False, "error": e.read().decode("utf-8", errors="replace")})
         except Exception as e:
