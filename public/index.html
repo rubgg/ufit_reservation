@@ -129,15 +129,30 @@
   </style>
 <script>
   (function() {
-    const PIN = '0406'; // cámbialo por tu PIN
-    if (sessionStorage.getItem('auth') !== PIN) {
-      const intento = prompt('🔒 Introduce el PIN:');
-      if (intento !== PIN) {
-        document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ PIN incorrecto</p>';
-        throw new Error('PIN incorrecto');
-      }
-      sessionStorage.setItem('auth', PIN);
+    if (sessionStorage.getItem('auth') === '1') return;
+
+    const pin = prompt('🔒 Introduce el PIN:');
+    if (!pin) {
+      document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ Acceso denegado</p>';
+      throw new Error('Sin PIN');
     }
+
+    fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        sessionStorage.setItem('auth', '1');
+      } else {
+        document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ PIN incorrecto</p>';
+      }
+    })
+    .catch(() => {
+      document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ Error de conexión</p>';
+    });
   })();
 </script>
 </head>
