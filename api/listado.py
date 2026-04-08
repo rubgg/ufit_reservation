@@ -26,13 +26,20 @@ class handler(BaseHTTPRequestHandler):
             self._respond(500, {"error": "TARGET_URL o CLIENT_ID no configurados"})
             return
 
+        # Build form-encoded body
+        form_data = urllib.parse.urlencode({
+            "token": {AUTH_TOKEN},
+            "flags_token": 1
+        })
+        body = form_data.encode("utf-8")
+
         url = f"{TARGET_URL}/listado_reservas_cliente/{CLIENT_ID}"
 
         req = urllib.request.Request(
             url,
-            data=b"",
+            data=body,
             method="POST",
-            headers={"Authorization": f"Bearer {AUTH_TOKEN}"},
+            headers={"Codigo": f"Bearer {CODIGO}"},
         )
 
         try:
