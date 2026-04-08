@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UFit – Reservar</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f5f4f0;
+      font-family: system-ui, sans-serif;
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: min(360px, 100%);
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: .9rem;
+      font-weight: 500;
+      color: #475569;
+    }
+
+    input[type="date"],
+    input[type="time"],
+    select {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 1.05rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: #1e293b;
+      outline: none;
+      transition: border-color .15s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    select:focus {
+      border-color: #2563eb;
+    }
+
+    /* Activity toggle */
+    .toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toggle-group input[type="radio"] { display: none; }
+
+    .toggle-group label {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 8px;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #64748b;
+      background: #f8fafc;
+      text-align: center;
+      transition: all .15s;
+    }
+
+    .toggle-group input[type="radio"]:checked + label {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    #btn {
+      width: 100%;
+      padding: 20px 16px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      background: #2563eb;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 16px rgba(37,99,235,.25);
+      margin-top: 4px;
+    }
+    #btn:active    { transform: scale(.97); background: #1d4ed8; }
+    #btn:disabled  { background: #93b4f5; cursor: default; }
+
+    #estado {
+      margin-top: 4px;
+      font-size: 1rem;
+      text-align: center;
+      min-height: 28px;
+      color: #3d3d3a;
+    }
+    #estado.ok    { color: #15803d; font-weight: 500; }
+    #estado.error { color: #b91c1c; }
+  </style>
+</head>
+<body>
+
+  <h1>🏋️ Reservar clase UFit</h1>
+
+  <div class="card">
+
+    <label>
+      Fecha
+      <input type="date" id="fecha">
+    </label>
+
+    <label>
+      Hora inicio
+      <input type="time" id="hora" step="3600">
+    </label>
+
+    <div>
+      <div style="font-size:.9rem;font-weight:500;color:#475569;margin-bottom:10px;">Actividad</div>
+      <div class="toggle-group">
+        <div>
+          <input type="radio" name="actividad" id="funcional" value="695" checked>
+          <label for="funcional">💪 Funcional</label>
+        </div>
+        <div>
+          <input type="radio" name="actividad" id="pilates" value="228">
+          <label for="pilates">🧘 Pilates</label>
+        </div>
+      </div>
+    </div>
+
+    <button id="btn" onclick="reservar()">📅 Reservar</button>
+
+    <div id="estado"></div>
+
+  </div>
+
+  <script>
+    // Pre-fill today's date
+    const hoy = new Date();
+    const yyyy = hoy.getFullYear();
+    const mm   = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dd   = String(hoy.getDate()).padStart(2, '0');
+    document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('hora').value  = '17:00';
+
+    async function reservar() {
+      const btn    = document.getElementById('btn');
+      const estado = document.getElementById('estado');
+
+      const fecha = document.getElementById('fecha').value;
+      const hora  = document.getElementById('hora').value;
+      const actividadId = document.querySelector('input[name="actividad"]:checked').value;
+
+      if (!fecha || !hora) {
+        estado.className   = 'error';
+        estado.textContent = '⚠️ Elige fecha y hora antes de continuar.';
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.textContent = '⏳ Reservando…';
+      estado.className = '';
+      estado.textContent = '';
+
+      try {
+        const resp = await fetch('/api/enviar', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fecha, hora_inicio: hora, actividadId }),
+        });
+        const data = await resp.json();
+
+        if (data.ok) {
+          const nombre = actividadId === '695' ? 'Funcional' : 'Pilates';
+          estado.className   = 'ok';
+          estado.textContent = `✅ Reserva enviada: ${nombre} el ${fecha} de ${hora} a ${data.hora_fin}`;
+        } else {
+          estado.className   = 'error';
+          estado.textContent = `❌ Error ${data.status ?? ''}: ${data.detail ?? data.error ?? 'Inténtalo de nuevo'}`;
+        }
+      } catch (e) {
+        estado.className   = 'error';
+        estado.textContent = '❌ No se pudo conectar. Comprueba el internet.';
+      }
+
+      btn.disabled    = false;
+      btn.textContent = '📅 Reservar';
+    }
+  </script>
+
+</body>
+</html>
