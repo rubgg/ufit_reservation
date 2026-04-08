@@ -217,6 +217,57 @@
       btn.textContent = '📅 Reservar';
     }
   </script>
+  
+  <div id="reservas-section" style="width:min(360px,100%);margin-top:32px;">
+    <h2 style="font-size:1.1rem;font-weight:600;color:#1e293b;margin-bottom:12px;">📋 Próximas reservas</h2>
+    <div id="reservas-lista"><p style="color:#94a3b8;font-size:.9rem;">Cargando...</p></div>
+  </div>
+
+  <script>
+    const ACTIVIDADES = { "695": "💪 Funcional", "228": "🧘 Pilates" };
+
+    async function cargarReservas() {
+      const lista = document.getElementById('reservas-lista');
+      try {
+        const resp = await fetch('/api/listado', { method: 'POST' });
+        const data = await resp.json();
+        if (!data.ok) throw new Error(data.error);
+
+        const hoy = new Date().toISOString().slice(0, 10);
+        const futuras = data.reservas
+          .filter(r => r.cancelado === "0" && r.fecha >= hoy)
+          .sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+        if (futuras.length === 0) {
+          lista.innerHTML = '<p style="color:#94a3b8;font-size:.9rem;">No hay reservas próximas.</p>';
+          return;
+        }
+
+        lista.innerHTML = futuras.map(r => `
+          <div style="background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:10px;
+                      box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:1rem;">
+                ${ACTIVIDADES[r.actividadId] ?? r.actividadId}
+              </div>
+              <div style="color:#64748b;font-size:.88rem;margin-top:3px;">
+                ${r.fecha} · ${r.hora_inicio.slice(0,5)}–${r.hora_fin.slice(0,5)}
+              </div>
+            </div>
+            <div style="font-size:.8rem;background:#eff6ff;color:#2563eb;
+                        padding:4px 10px;border-radius:20px;font-weight:500;">
+              ${r.plazas} plazas
+            </div>
+          </div>
+        `).join('');
+
+      } catch(e) {
+        lista.innerHTML = `<p style="color:#b91c1c;font-size:.9rem;">❌ Error cargando reservas</p>`;
+      }
+    }
+
+    cargarReservas();
+  </script>
 
 </body>
 </html>
