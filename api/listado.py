@@ -37,6 +37,19 @@ class handler(BaseHTTPRequestHandler):
 
         url = f"{TARGET_URL}/listado_reservas_cliente/{CLIENT_ID}"
 
+        try:
+            form_data = urllib.parse.urlencode({
+                "token": AUTH_TOKEN,
+                "flags_token": 1
+            })
+            body = form_data.encode("utf-8")
+            url = f"{TARGET_URL}/listado_reservas_cliente/{CLIENT_ID}"
+            self._respond(200, {"ok": True, "debug": f"url={url}, body={form_data}"})
+            return
+        except Exception as e:
+            self._respond(502, {"ok": False, "error": f"BUILD ERROR: {str(e)}"})
+            return
+
         req = urllib.request.Request(
             url,
             data=body,
