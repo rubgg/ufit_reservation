@@ -44,7 +44,8 @@ class handler(BaseHTTPRequestHandler):
             reservas = json.loads(content.decode("utf-8"))
             self._respond(200, {"ok": True, "reservas": reservas})
         except urllib.error.HTTPError as e:
-            self._respond(e.code, {"ok": False, "error": e.read().decode("utf-8", errors="replace")})
+            error_body = e.read().decode("utf-8", errors="replace")
+            self._respond(e.code, {"ok": False, "status": e.code, "detail": error_body, "url": url})
         except Exception as e:
             self._respond(502, {"ok": False, "error": str(e)})
 
