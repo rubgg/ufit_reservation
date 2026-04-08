@@ -10,6 +10,7 @@ from http.server import BaseHTTPRequestHandler
 TARGET_URL = os.environ.get("TARGET_URL", "")
 AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "")
 CODIGO = os.environ.get("CODIGO", "")
+CLIENT_ID  = os.environ.get("CLIENT_ID", "")
 
 
 class handler(BaseHTTPRequestHandler):
@@ -63,7 +64,7 @@ class handler(BaseHTTPRequestHandler):
             "sala": "",
             "actividadId": actividad_id,
             "gimnasioId": 233,
-            "clienteId": 59747,
+            "clienteId": {CLIENT_ID},
             "tipo": "N",
             "sesiones_restantes": 0,
             "sesiones_restantes_extras": 0,
