@@ -26,7 +26,7 @@ class handler(BaseHTTPRequestHandler):
             self._respond(500, {"error": "TARGET_URL o CLIENT_ID no configurados"})
             return
 
-        url = TARGET_URL.rstrip("/").rsplit("/api", 1)[0] + f"/api/listado_reservas_cliente/{CLIENT_ID}"
+        url = f"{TARGET_URL}/listado_reservas_cliente/{CLIENT_ID}"
 
         req = urllib.request.Request(
             url,

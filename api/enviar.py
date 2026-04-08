@@ -74,7 +74,7 @@ class handler(BaseHTTPRequestHandler):
         body = form_data.encode("utf-8")
 
         req = urllib.request.Request(
-            TARGET_URL,
+            TARGET_URL + "/insertar_reserva",
             data=body,
             method="POST",
             headers={
