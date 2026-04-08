@@ -39,7 +39,11 @@ class handler(BaseHTTPRequestHandler):
             url,
             data=body,
             method="POST",
-            headers={"Codigo": f"Bearer {CODIGO}"},
+            headers={
+                "Content-Type":  "application/x-www-form-urlencoded",
+                "Codigo": f"Bearer {CODIGO}",
+                "User-Agent": "Dart/3.9 (dart:io)",
+            },
         )
 
         try:
