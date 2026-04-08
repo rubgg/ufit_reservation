@@ -127,37 +127,39 @@
     #estado.ok    { color: #15803d; font-weight: 500; }
     #estado.error { color: #b91c1c; }
   </style>
+</head>
+<body>
 <script>
-  (function() {
-    if (sessionStorage.getItem('auth') === '1') return;
+  if (sessionStorage.getItem('auth') !== '1') {
+    document.documentElement.style.visibility = 'hidden';
 
     const pin = prompt('🔒 Introduce el PIN:');
     if (!pin) {
+      document.documentElement.style.visibility = 'visible';
       document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ Acceso denegado</p>';
-      throw new Error('Sin PIN');
+    } else {
+      fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          sessionStorage.setItem('auth', '1');
+          document.documentElement.style.visibility = 'visible';
+        } else {
+          document.documentElement.style.visibility = 'visible';
+          document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ PIN incorrecto</p>';
+        }
+      })
+      .catch(() => {
+        document.documentElement.style.visibility = 'visible';
+        document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ Error de conexión</p>';
+      });
     }
-
-    fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.ok) {
-        sessionStorage.setItem('auth', '1');
-      } else {
-        document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ PIN incorrecto</p>';
-      }
-    })
-    .catch(() => {
-      document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ Error de conexión</p>';
-    });
-  })();
+  }
 </script>
-</head>
-<body>
-
   <h1>🏋️ Reservar clase UFit</h1>
 
   <div class="card">
