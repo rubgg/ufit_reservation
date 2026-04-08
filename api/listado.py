@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler
 TARGET_URL = os.environ.get("TARGET_URL", "")
 AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "")
 CLIENT_ID  = os.environ.get("CLIENT_ID", "")
+CODIGO = os.environ.get("CODIGO", "")
 
 
 class handler(BaseHTTPRequestHandler):
