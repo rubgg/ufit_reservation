@@ -9,6 +9,7 @@ from http.server import BaseHTTPRequestHandler
 
 TARGET_URL = os.environ.get("TARGET_URL", "")
 AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "")
+CODIGO = os.environ.get("CODIGO", "")
 
 
 class handler(BaseHTTPRequestHandler):
@@ -59,7 +60,15 @@ class handler(BaseHTTPRequestHandler):
             "fecha":       fecha,
             "hora_inicio": hora_inicio,
             "hora_fin":    hora_fin,
+            "sala": "",
             "actividadId": actividad_id,
+            "gimnasioId": 233,
+            "clienteId": 59747,
+            "tipo": "N",
+            "sesiones_restantes": 0,
+            "sesiones_restantes_extras": 0,
+            "token": {AUTH_TOKEN},
+            "flags_token": 1
         })
         body = form_data.encode("utf-8")
 
@@ -69,7 +78,8 @@ class handler(BaseHTTPRequestHandler):
             method="POST",
             headers={
                 "Content-Type":  "application/x-www-form-urlencoded",
-                "Authorization": f"Bearer {AUTH_TOKEN}",
+                "User-Agent": "Dart/3.9 (dart:io)",
+                "Codigo": f"Bearer {CODIGO}",
             },
         )
 
