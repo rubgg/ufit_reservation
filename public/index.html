@@ -127,6 +127,19 @@
     #estado.ok    { color: #15803d; font-weight: 500; }
     #estado.error { color: #b91c1c; }
   </style>
+<script>
+  (function() {
+    const PIN = '0406'; // cámbialo por tu PIN
+    if (sessionStorage.getItem('auth') !== PIN) {
+      const intento = prompt('🔒 Introduce el PIN:');
+      if (intento !== PIN) {
+        document.body.innerHTML = '<p style="text-align:center;margin-top:40vh;font-size:1.2rem;color:#b91c1c">❌ PIN incorrecto</p>';
+        throw new Error('PIN incorrecto');
+      }
+      sessionStorage.setItem('auth', PIN);
+    }
+  })();
+</script>
 </head>
 <body>
 
