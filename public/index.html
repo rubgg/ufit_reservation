@@ -251,7 +251,7 @@
                 ${ACTIVIDADES[r.actividadId] ?? r.actividadId}
               </div>
               <div style="color:#64748b;font-size:.88rem;margin-top:3px;">
-                ${r.fecha} · ${r.hora_inicio.slice(0,5)}–${r.hora_fin.slice(0,5)}
+                ${r.fecha.split('-').reverse().join('/')} · ${r.hora_inicio.slice(0,5)}–${r.hora_fin.slice(0,5)}
               </div>
             </div>
             <div style="font-size:.8rem;background:#eff6ff;color:#2563eb;
