@@ -203,7 +203,7 @@
         if (data.ok) {
           const nombre = actividadId === '695' ? 'Funcional' : 'Pilates';
           estado.className   = 'ok';
-          estado.textContent = `✅ Reserva enviada: ${nombre} el ${fecha} de ${hora} a ${data.hora_fin}`;
+          estado.textContent = `✅ ${data.mensaje} — Posición: ${data.posicion} | ${nombre} el ${fecha} de ${hora} a ${data.hora_fin}`;
         } else {
           estado.className   = 'error';
           estado.textContent = `❌ Error ${data.status ?? ''}: ${data.detail ?? data.error ?? 'Inténtalo de nuevo'}`;

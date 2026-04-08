@@ -86,8 +86,18 @@ class handler(BaseHTTPRequestHandler):
         try:
             with urllib.request.urlopen(req, timeout=15) as resp:
                 status  = resp.status
-                resp.read()
-            self._respond(status, {"ok": True, "status": status, "hora_fin": hora_fin})
+                content = resp.read()
+            try:
+                server_data = json.loads(content)
+            except Exception:
+                server_data = {}
+            self._respond(status, {
+                "ok": True,
+                "status": status,
+                "hora_fin": hora_fin,
+                "mensaje": server_data.get("mensaje", ""),
+                "posicion": server_data.get("posicion", ""),
+            })
 
         except urllib.error.HTTPError as e:
             error_body = e.read().decode("utf-8", errors="replace")
